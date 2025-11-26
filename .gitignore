@@ -1,0 +1,17 @@
+# Environment & Secrets
+.env
+apikey.txt
+
+# Database and Generated Files
+movies.db
+.DS_Store
+
+# Python Environment
+venv/
+
+# IPython Notebook files
+.ipynb_checkpoints/
+TMDB API Interaction.ipynb
+
+# Temporary/Backup files
+base.txt

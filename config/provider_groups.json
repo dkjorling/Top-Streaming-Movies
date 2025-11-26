@@ -1,0 +1,250 @@
+{
+   "netflix": {
+      "label": "Netflix",
+      "names": [
+         "Netflix",
+         "Netflix Kids",
+         "Netflix Standard with Ads"
+      ]
+   },
+   "prime": {
+      "label": "Prime Video",
+      "names": [
+         "Amazon Prime Video",
+         "Amazon Prime Video Free with Ads",
+         "Amazon Prime Video with Ads",
+         "Amazon Video"
+        
+      ]
+   },
+   "apple_tv": {
+      "label": "Apple TV",
+      "names": [
+         "Apple TV"
+      ]
+   },
+   "max": {
+      "label": "HBO Max",
+      "names": [
+         "HBO Max"
+      ]
+   },
+   "hulu": {
+      "label": "Hulu",
+      "names": [
+         "Hulu"
+      ]
+   },
+   "disney": {
+      "label": "Disney+",
+      "names": [
+         "Disney Plus",
+         "DisneyNOW"
+      ]
+   },
+   "peacock": {
+      "label": "Peacock",
+      "names": [
+         "NBC",
+         "Peacock Premium",
+         "Peacock Premium Plus"
+      ]
+   },
+   "paramount": {
+      "label": "Paramount+",
+      "names": [
+         "Paramount Plus",
+         "Paramount Plus Apple TV Channel ",
+         "Paramount+ Amazon Channel",
+         "Paramount+ MTV Amazon Channel",
+         "Paramount+ Originals Amazon Channel",
+         "Paramount+ Roku Premium Channel",
+         "Paramount+ with Showtime"
+      ]
+   },
+   "starz": {
+      "label": "Starz",
+      "names": [
+         "Starz",
+         "Starz Amazon Channel",
+         "Starz Apple TV Channel",
+         "Starz Roku Premium Channel"
+      ]
+   },
+   "mgm": {
+      "label": "MGM+",
+      "names": [
+         "MGM Plus",
+         "MGM Plus Roku Premium Channel",
+         "MGM+ Amazon Channel"
+      ]
+   },
+   "shudder": {
+      "label": "Shudder",
+      "names": [
+         "Shudder",
+         "Shudder Amazon Channel",
+         "Shudder Apple TV Channel"
+      ]
+   },
+   "amc": {
+      "label": "AMC+",
+      "names": [
+         "AMC",
+         "AMC+",
+         "AMC+ Amazon Channel",
+         "AMC+ Roku Premium Channel"
+      ]
+   },
+   "crunchyroll": {
+      "label": "Crunchyroll",
+      "names": [
+         "Crunchyroll",
+         "Crunchyroll Amazon Channel"
+      ]
+   },
+   "criterion": {
+      "label": "Criterion Channel",
+      "names": [
+         "Criterion Channel"
+      ]
+   },
+   "youtube": {
+      "label": "YouTube",
+      "names": [
+         "YouTube",
+         "YouTube Free",
+         "YouTube TV"
+      ]
+   },
+   "mubi": {
+      "label": "MUBI",
+      "names": [
+         "MUBI",
+         "MUBI Amazon Channel"
+      ]
+   },
+   "fubo": {
+      "label": "fuboTV",
+      "names": [
+         "fuboTV"
+      ]
+   },
+   "viaplay": {
+      "label": "Viaplay",
+      "names": [
+         "Viaplay Amazon Channel"
+      ]
+   },
+   "screenpix": {
+      "label": "ScreenPix",
+      "names": [
+         "ScreenPix Amazon Channel ",
+         "ScreenPix Apple TV Channel"
+      ]
+   },
+   "midnight_pulp": {
+      "label": "Midnight Pulp",
+      "names": [
+         "Midnight Pulp",
+         "Midnight Pulp Amazon Channel"
+      ]
+   },
+   "arrow": {
+      "label": "ARROW",
+      "names": [
+         "ARROW"
+      ]
+   },
+   "tcmtbs": {
+      "label": "TCM / TNT / TBS",
+      "names": [
+         "TCM",
+         "TNT",
+         "TBS"
+      ]
+   },
+   "usa": {
+      "label": "USA Network",
+      "names": [
+         "USA Network"
+      ]
+   },
+   "amorphous_others": {
+      "label": "Other",
+      "names": [
+         "Acorn TV",
+         "Acorn TV Apple TV",
+         "AcornTV Amazon Channel",
+         "AD tv",
+         "ALLBLK",
+         "ARROW",
+         "AsianCrush",
+         "Bloodstream",
+         "BritBox",
+         "Britbox Apple TV Channel ",
+         "Cineverse",
+         "Darkroom",
+         "Dekkoo",
+         "Discovery +",
+         "DistroTV",
+         "DocAlliance Films",
+         "Eternal Family",
+         "FOUND TV",
+         "FXNow",
+         "Fandango At Home",
+         "Fandango at Home Free",
+         "Fawesome",
+         "Fear Factory Amazon Channel",
+         "Film Movement Plus",
+         "FilmBox+",
+         "Filmzie",
+         "Flix Premiere",
+         "FlixFling",
+         "FlixHouse",
+         "Freeform",
+         "Full Moon Amazon Channel",
+         "History Vault",
+         "Hoopla",
+         "IndieFlix",
+         "JustWatchTV",
+         "Kanopy",
+         "Kino Film Collection",
+         "Klassiki",
+         "Kocowa",
+         "Lifetime",
+         "Lifetime Movie Club",
+         "Metrograph",
+         "Mometu",
+         "MovieMe",
+         "Night Flight Plus",
+         "OnDemandKorea",
+         "OVID",
+         "Plex",
+         "Plex Channel",
+         "Pluto TV",
+         "Pluto TV Live",
+         "Public Domain Movies",
+         "Pure Flix",
+         "Rakuten Viki",
+         "Reveel",
+         "Runtime",
+         "ScreenPix Apple TV Channel",
+         "Shout! Factory TV",
+         "Spectrum On Demand",
+         "Stingray Karaoke Amazon Channel",
+         "Strand Releasing Amazon Channel",
+         "Sundance Now",
+         "The CW",
+         "The Roku Channel",
+         "Troma NOW",
+         "Tubi TV",
+         "UP Faith & Family",
+         "VIX ",
+         "Vimeo",
+         "XLTV Amazon Channel ",
+         "myfilmfriend",
+         "tru TV"
+      ]
+   }
+}

@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block title %}Top Streaming Movies{% endblock %}
+
+{% block content %}
+
+<style>
+/* Rank badge styling */
+.rank-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.75);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.25rem;
+  z-index: 10;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+.card-with-rank { position: relative; overflow: hidden; }
+.poster-img { object-fit: cover; height: 340px; width: 100%; } /* limit poster height */
+@media (max-width: 576px) {
+  .poster-img { height: 220px; }
+  .rank-badge { width: 44px; height: 44px; font-size: 1rem; top: 8px; left: 8px; }
+}
+</style>
+
+---
+
+<form method="get" class="mb-4">
+
+  <div class="row g-3">
+
+    <div>
+      <label class="form-label fs-4 fw-bold">Choose Your Streaming Providers</label>
+      <div class="d-flex flex-wrap gap-3">
+
+        {# 
+          We support both:
+          - New grouped structure: p.group_key / p.label
+          - Old raw structure:   p.provider_id / p.provider_name
+        #}
+        {% for p in providers %}
+          {# Determine an ID value that works for either structure #}
+          {% set filter_id = p.key or p.provider_id %}
+          {% set filter_label = p.label or p.provider_name %}
+
+          <div class="form-check me-2">
+            <input class="form-check-input"
+                   type="checkbox"
+                   id="provider_{{ filter_id }}"
+                   name="providers"
+                   value="{{ filter_id }}"
+                   {% if filter_id in selected_providers %}checked{% endif %}>
+            <label class="form-check-label" for="provider_{{ filter_id }}">
+              {{ filter_label }}
+            </label>
+          </div>
+        {% endfor %}
+
+      </div>
+    </div>
+
+    <div class="col-md-auto d-flex gap-2 mt-3">
+      <button class="btn btn-primary flex-grow-1" type="submit">Apply Filters</button>
+      <a href="{{ url_for('index') }}" class="btn btn-secondary flex-grow-1">Clear Filters</a>
+    </div>
+
+  </div>
+</form>
+
+---
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+
+  {% for m in movies %}
+    <div class="col">
+      <div class="card h-100 shadow-sm card-with-rank">
+
+        {# Rank badge (big number) #}
+        {% if m.rank %}
+          <div class="rank-badge">{{ m.rank }}</div>
+        {% endif %}
+
+        {# Poster: support poster_url or poster_path #}
+        {% set poster = m.poster_url or m.poster_path %}
+        {% if poster %}
+          {# If poster looks like a TMDB relative path (starts with "/"), build full URL #}
+          {% set poster_full = m.poster_url or ("https://image.tmdb.org/t/p/w500" + poster) %}
+          
+          <img src="{{ poster_full }}" 
+               class="card-img-top poster-img" 
+               alt="{{ m.title }}">
+        {% endif %}
+
+        <div class="card-body d-flex flex-column">
+
+          <h5 class="card-title">
+            {{ m.title }}
+            {% if m.year %}
+              ({{ m.year }})
+            {% endif %}
+          </h5>
+
+          <p class="mb-1">
+            <strong>IMDb:</strong>
+            {% if m.imdb_rating is not none and m.imdb_id %}
+              <a href="https://www.imdb.com/title/{{ m.imdb_id }}/" target="_blank">
+                {{ "%.1f"|format(m.imdb_rating) }}
+              </a>
+              {% if m.imdb_votes %}
+                <small class="text-muted">
+                  ({{ "{:,}".format(m.imdb_votes) }} votes)
+                </small>
+              {% endif %}
+            {% else %}
+              N/A
+            {% endif %}
+          </p>
+
+          <p class="mb-0 mt-auto">
+            <strong>Available on:</strong><br>
+            {% set provider_str = m.provider_groups|join(", ") if m.provider_groups else (m.providers or "") %}
+            {% if provider_str %}
+                {{ provider_str }}
+            {% else %}
+                No streaming info
+            {% endif %}
+          </p>
+
+        </div>
+
+      </div>
+    </div>
+  {% endfor %}
+
+</div>
+
+---
+
+<nav aria-label="Movie pagination" class="mt-4">
+  <ul class="pagination justify-content-center">
+
+    {% if total_pages > 1 %}
+      
+      {# Initialize a namespace object to hold a mutable variable #}
+      {% set ns = namespace(filter_params="") %}
+      
+      {# Iterate over selected_providers and append to the namespace variable #}
+      {% for p in selected_providers %}
+        {% set ns.filter_params = ns.filter_params ~ "providers=" ~ p ~ "&" %}
+      {% endfor %}
+      
+      {# The complete filter string is now stored in ns.filter_params #}
+      
+      {# --- Previous Button --- #}
+      <li class="page-item {% if page == 1 %}disabled{% endif %}">
+        <a class="page-link" 
+           href="?{{ ns.filter_params }}page={{ page - 1 }}" 
+           aria-disabled="{% if page == 1 %}true{% endif %}">
+          Previous
+        </a>
+      </li>
+
+      {# --- Page Numbers Window --- #}
+      {% set window = 2 %} {# Show up to 2 pages before and after the current page #}
+      
+      {# Ensure start_page is at least 1 #}
+      {% set start_page = (page - window) %}
+      {% if start_page < 1 %}
+          {% set start_page = 1 %}
+      {% endif %}
+
+      {# Ensure end_page is no more than total_pages #}
+      {% set end_page = (page + window) %}
+      {% if end_page > total_pages %}
+          {% set end_page = total_pages %}
+      {% endif %}
+      
+      {% for p_num in range(start_page, end_page + 1) %}
+        <li class="page-item {% if p_num == page %}active{% endif %}">
+          {% if p_num == page %}
+            <span class="page-link">{{ p_num }}</span>
+          {% else %}
+            <a class="page-link" 
+               href="?{{ ns.filter_params }}page={{ p_num }}">
+              {{ p_num }}
+            </a>
+          {% endif %}
+        </li>
+      {% endfor %}
+      
+      {# --- Next Button --- #}
+      <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+        <a class="page-link" 
+           href="?{{ ns.filter_params }}page={{ page + 1 }}"
+           aria-disabled="{% if page == total_pages %}true{% endif %}">
+          Next
+        </a>
+      </li>
+    
+    {% endif %}
+
+  </ul>
+</nav>
+
+{% endblock %}

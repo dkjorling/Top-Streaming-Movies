@@ -1,0 +1,15 @@
+/* static/style.css */
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.card-img-top {
+  object-fit: cover;
+  height: 350px;
+}
+
+.poster {
+    width: 200px;
+    height: auto;
+    border-radius: 8px;
+}
+
