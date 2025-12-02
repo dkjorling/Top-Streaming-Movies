@@ -54,8 +54,11 @@ def init_db():
     conn.commit()
     conn.close()
 
-def fetch_discover_page(page):
-    """Fetches a page of popular movies from TMDb's discovery endpoint."""
+def fetch_discover_page(page, start_date=None, end_date=None):
+    """
+    Fetches a page of popular movies from TMDb's discovery endpoint, 
+    optionally filtering by date range.
+    """
     url = f"{BASE_URL}/discover/movie"
     params = {
         "api_key": API_KEY,
@@ -66,6 +69,13 @@ def fetch_discover_page(page):
         "vote_count.gte": 50,
         "page": page,
     }
+
+    # FIX 2: Correctly add date parameters if they are provided
+    if start_date:
+        params["primary_release_date.gte"] = start_date
+    if end_date:
+        params["primary_release_date.lte"] = end_date
+
     r = requests.get(url, params=params)
     r.raise_for_status()
     return r.json()
