@@ -17,8 +17,8 @@ if not OMDB_API_KEY:
 OMDB_BASE_URL = "https://www.omdbapi.com/"
 
 # API Budgeting
-TOTAL_DAILY_BUDGET = 12000
-BUDGET_FOR_MISSING_DATA = 11000 # Allocate the bulk to high priority (NULL data)
+TOTAL_DAILY_BUDGET = 99000
+BUDGET_FOR_MISSING_DATA = 90000 # Allocate the bulk to high priority (NULL data)
 BUDGET_FOR_REFRESH = TOTAL_DAILY_BUDGET - BUDGET_FOR_MISSING_DATA # Remaining 200 for refresh
 # --- End Configuration ---
 

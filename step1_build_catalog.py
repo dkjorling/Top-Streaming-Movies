@@ -157,7 +157,7 @@ def fetch_catalog_by_date_range(start_date, end_date, max_movies_per_range):
         time.sleep(0.5) # Wait between pages
 
 
-def monthly_catalog_update(max_movies_per_range=15000):
+def monthly_catalog_update(max_movies_per_range=10000):
     """
     MAIN FUNCTION: Iterates through defined date ranges to build the catalog deeply, 
     limiting the number of movies fetched per range.
