@@ -7,6 +7,19 @@ from datetime import datetime
 API_KEY = "1754f7807ed27f043249528e821a8110"
 BASE_URL = "https://api.themoviedb.org/3"
 DB_PATH = "movies.db"
+
+# Define the date ranges for deep fetching (e.g., decade by decade)
+# This will break the query limit imposed by TMDb's Discover endpoint.
+DATE_RANGES = [
+    ("2020-01-01", datetime.now().strftime("%Y-%m-%d")), # 2020s to Today
+    ("2010-01-01", "2019-12-31"), # 2010s
+    ("2000-01-01", "2009-12-31"), # 2000s
+    ("1990-01-01", "1999-12-31"), # 1990s
+    ("1980-01-01", "1989-12-31"), # 1980s
+    ("1970-01-01", "1979-12-31"), # 1970s
+    ("1960-01-01", "1969-12-31"), # 1960s
+    ("1900-01-01", "1959-12-31"), # Oldest movies
+]
 # --- End Configuration ---
 
 def get_db():
@@ -65,6 +78,7 @@ def fetch_movie_details(tmdb_id):
     r.raise_for_status()
     return r.json()
 
+
 def upsert_movie(details):
     """Inserts or replaces a movie record into the database."""
     conn = get_db()
@@ -92,37 +106,79 @@ def upsert_movie(details):
     conn.commit()
     conn.close()
 
-def monthly_catalog_update(pages=2000):
+def fetch_catalog_by_date_range(start_date, end_date, max_movies_per_range):
     """
-    MAIN FUNCTION: Rebuilds or refreshes the entire movie catalog up to 'pages' deep.
-    This function is designed to be called by the APScheduler monthly.
+    Fetches movies for a specific date range, constrained by the 500-page limit
+    AND the new max_movies_per_range limit.
     """
-    print(f"\n--- Starting MONTHLY catalog update ({pages} pages) ---")
+    total_pages = 500 # The max allowed pages per query
+    movies_processed_in_range = 0
     
-    # Ensure the table exists
+    print(f"\n--- Scanning movies released between {start_date} and {end_date} (Max: {max_movies_per_range}) ---")
+
+    for page in range(1, total_pages + 1):
+        if movies_processed_in_range >= max_movies_per_range:
+            print(f"  Max movies for range ({max_movies_per_range}) reached. Moving to next range.")
+            return
+
+        print(f"  Fetching page {page}/{total_pages} for this range...")
+        
+        try:
+            data = fetch_discover_page(page, start_date, end_date)
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 429:
+                print("    Rate limit hit. Waiting 10 seconds.")
+                time.sleep(10)
+                continue # Retry the page
+            else:
+                raise e
+
+        if not data.get("results"):
+            print("  No more results in this date range. Stopping scan.")
+            break
+            
+        if page == 1:
+            total_pages = min(data.get("total_pages", 500), 500)
+            print(f"  API reports {total_pages} total pages available (capped at 500).")
+
+        for item in data["results"]:
+            if movies_processed_in_range >= max_movies_per_range:
+                break # Exit inner movie loop
+
+            tmdb_id = item["id"]
+            if not item.get("release_date"): continue
+            
+            # print(f"    Fetching details for movie {tmdb_id}")
+            details = fetch_movie_details(tmdb_id)
+            upsert_movie(details)
+            movies_processed_in_range += 1
+            time.sleep(0.25)
+
+        time.sleep(0.5) # Wait between pages
+
+
+def monthly_catalog_update(max_movies_per_range=15000):
+    """
+    MAIN FUNCTION: Iterates through defined date ranges to build the catalog deeply, 
+    limiting the number of movies fetched per range.
+    """
+    print(f"\n--- Starting MONTHLY deep catalog update ---")
+    
     init_db()
 
     try:
-        for page in range(1, pages + 1):
-            print(f"[{datetime.now().strftime('%H:%M:%S')}] Fetching discover page {page}/{pages}")
-            data = fetch_discover_page(page)
-
-            for item in data["results"]:
-                tmdb_id = item["id"]
-                # Skip if no release date, indicating incomplete data
-                if not item.get("release_date"):
-                    continue 
-
-                print(f"  Fetching movie {tmdb_id}...")
-                details = fetch_movie_details(tmdb_id)
-                upsert_movie(details)
-                time.sleep(0.25)  # Be nice to TMDb (4 calls per second max)
-
-            time.sleep(0.5) # Wait between pages
-        
-        print(f"--- MONTHLY catalog update FINISHED successfully ---")
+        for start_date, end_date in DATE_RANGES:
+            fetch_catalog_by_date_range(start_date, end_date, max_movies_per_range)
+            
+        print(f"\n--- MONTHLY deep catalog update FINISHED successfully ---")
         return True
     
+    except requests.exceptions.RequestException as e:
+        print(f"Catalog update stopped due to API error: {e}")
+        return False
+    except Exception as e:
+        print(f"Catalog update stopped due to general error: {e}")
+        return False
     except requests.exceptions.RequestException as e:
         print(f"Catalog update stopped due to API error: {e}")
         return False
