@@ -1,0 +1,21 @@
+[program:flask_app]
+command=/home/ubuntu/app/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:8000 app:app
+directory=/home/ubuntu/app
+user=ubuntu
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+stderr_logfile=/var/log/supervisor/flask_app_err.log
+stdout_logfile=/var/log/supervisor/flask_app_out.log
+
+[program:data_scheduler]
+command=/home/ubuntu/app/venv/bin/python scheduler.py
+directory=/home/ubuntu/app
+user=ubuntu
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+stderr_logfile=/var/log/supervisor/scheduler_err.log
+stdout_logfile=/var/log/supervisor/scheduler_out.log
