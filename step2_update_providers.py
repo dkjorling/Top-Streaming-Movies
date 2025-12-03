@@ -132,10 +132,6 @@ def update_providers_data():
 
         print("--- Provider update complete ---")
         return True # Indicate successful run
-
-    except requests.exceptions.HTTPError as e:
-        print(f"Provider update failed due to TMDb API error: {e}")
-        return False
     except Exception as e:
         print(f"Provider update failed due to general error: {e}")
         return False
