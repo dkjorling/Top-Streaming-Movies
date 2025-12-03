@@ -28,26 +28,40 @@ def get_db():
     conn.row_factory = sqlite3.Row
     return conn
 
+def add_missing_column(cur, conn, table, column, column_type):
+    """Helper function to safely add a column if it doesn't exist."""
+    try:
+        cur.execute(f"SELECT {column} FROM {table} LIMIT 1")
+        print(f"Schema check: {column} column exists.")
+    except sqlite3.OperationalError:
+        print(f"Schema check: Adding missing column {column}...")
+        cur.execute(f"ALTER TABLE {table} ADD COLUMN {column} {column_type}")
+        conn.commit()
+        print(f"Schema update complete: Added {column}.")
+
 def setup_database_schema():
     """
-    Checks if the omdb_last_updated column exists and adds it if missing.
-    This helps prioritize which movies to refresh.
+    Ensures all necessary columns for OMDb data storage exist in the 'movie' table.
     """
     conn = None
     try:
         conn = get_db()
         cur = conn.cursor()
         
-        # Check if column exists by attempting to select it
-        cur.execute("SELECT omdb_last_updated FROM movie LIMIT 1")
-        print("Schema check: omdb_last_updated column exists.")
+        # List of columns to check and add if missing
+        columns_to_add = [
+            ("omdb_last_updated", "TEXT"), # The timestamp of the last successful update
+            ("imdb_rating", "REAL"),       # The rating (float)
+            ("imdb_votes", "INTEGER"),     # The vote count (integer)
+            ("omdb_raw_json", "TEXT"),     # The raw JSON data from OMDb (the one you were missing!)
+        ]
+
+        # Add any missing columns
+        for column, column_type in columns_to_add:
+            add_missing_column(cur, conn, 'movie', column, column_type)
         
-    except sqlite3.OperationalError:
-        # Column does not exist, so add it
-        print("Schema check: Adding omdb_last_updated column...")
-        cur.execute("ALTER TABLE movie ADD COLUMN omdb_last_updated TEXT")
-        conn.commit()
-        print("Schema update complete.")
+    except Exception as e:
+        print(f"Schema check failed: {e}")
         
     finally:
         if conn:
